@@ -4,6 +4,8 @@
 
 線上版：**https://seeyouwell-debug.github.io/a2o-kb-chat/**
 
+![介面預覽](preview.png)
+
 ---
 
 ## 這是什麼
