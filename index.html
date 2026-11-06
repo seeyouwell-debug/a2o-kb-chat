@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>a2o 知識庫 · 問答</title>
+<meta name="description" content="a2o 知識庫問答：貼上你自己的 Groq API Key，直接用中文問。金鑰只留在這台瀏覽器。" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23116b5a'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-size='26' fill='white' text-anchor='middle'%3Ea2o%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --paper:#f6f4ef;
+    --paper-2:#fbfaf6;
+    --panel:#ffffff;
+    --ink:#14161a;
+    --ink-2:#3a404a;
+    --muted:#5c6572;
+    --muted-2:#6f7885;
+    --line:#e4e0d6;
+    --line-2:#eeebe3;
+    --jade:#116b5a;
+    --jade-d:#0c5346;
+    --jade-soft:#e5f1ed;
+    --jade-soft-2:#f1f8f5;
+    --amber:#a9570a;
+    --amber-soft:#fdf1e2;
+    --danger:#b42318;
+    --danger-soft:#fdeceb;
+    --r-lg:22px;
+    --r-md:16px;
+    --r-sm:10px;
+    --shadow-sm:0 1px 2px rgba(20,22,26,.05), 0 4px 14px -8px rgba(20,22,26,.18);
+    --shadow-md:0 1px 2px rgba(20,22,26,.04), 0 18px 40px -18px rgba(20,22,26,.28);
+    --font-sans:"Inter","Noto Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Noto Serif TC",serif;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;color:var(--ink);background:var(--paper);
+    font-family:var(--font-sans);font-size:15px;line-height:1.68;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(920px 520px at 82% -12%, rgba(17,107,90,.10), transparent 62%),
+      radial-gradient(760px 460px at 6% 112%, rgba(169,87,10,.075), transparent 62%);
+  }
+  [hidden]{display:none !important}
+  button{font:inherit;color:inherit}
+  a{color:var(--jade);text-underline-offset:3px}
+  :focus-visible{outline:2px solid var(--jade);outline-offset:3px;border-radius:6px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+  /* ---------- shell ---------- */
+  .app{position:relative;z-index:1;display:grid;grid-template-columns:298px minmax(0,1fr);height:100dvh}
+
+  .sidebar{
+    display:flex;flex-direction:column;min-height:0;
+    border-right:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(253,252,249,.92), rgba(250,248,243,.82));
+    backdrop-filter:blur(12px);
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:22px 20px 16px}
+  .mark{
+    width:38px;height:38px;flex:0 0 38px;border-radius:12px;
+    background:linear-gradient(160deg,#177a66,#0c5346);
+    color:#fff;display:grid;place-items:center;
+    font-family:var(--font-serif);font-size:15px;letter-spacing:.02em;
+    box-shadow:0 6px 16px -8px rgba(12,83,70,.9), inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .brand__text{min-width:0}
+  .brand__name{font-family:var(--font-serif);font-size:19px;line-height:1.2;letter-spacing:.01em}
+  .brand__sub{font-size:11.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+  .demo-pill{
+    margin-left:auto;font-size:10.5px;letter-spacing:.06em;color:var(--amber);
+    background:var(--amber-soft);border:1px solid #f3ddc2;border-radius:999px;
+    padding:3px 8px;white-space:nowrap;
+  }
+
+  .side-block{padding:14px 20px 0}
+  .side-label{font-size:11px;letter-spacing:.12em;color:var(--muted-2);text-transform:uppercase;margin:0 0 8px}
+  .status{
+    display:flex;align-items:center;gap:9px;width:100%;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:9px 11px;cursor:pointer;text-align:left;transition:border-color .15s, box-shadow .15s;
+  }
+  .status:hover{border-color:#cfc9bb;box-shadow:var(--shadow-sm)}
+  .dot{width:8px;height:8px;border-radius:50%;background:#c3a24a;box-shadow:0 0 0 3px rgba(195,162,74,.16);flex:0 0 8px}
+  .dot--on{background:#1a9c7a;box-shadow:0 0 0 3px rgba(26,156,122,.16)}
+  .status__txt{font-size:12.5px;line-height:1.35}
+  .status__txt b{display:block;font-weight:600}
+  .status__txt span{color:var(--muted);font-size:11px}
+  .status__chev{margin-left:auto;color:var(--muted-2);font-size:12px}
+
+  .kb-tree{flex:1;min-height:0;overflow:auto;padding:16px 12px 8px;margin-top:2px}
+  .kb-tree::-webkit-scrollbar{width:8px}
+  .kb-tree::-webkit-scrollbar-thumb{background:#ddd8cc;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+  details.cat{border-radius:10px}
+  details.cat + details.cat{margin-top:1px}
+  details.cat > summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;
+    padding:7px 8px;border-radius:9px;font-size:12.5px;color:var(--ink-2);
+    transition:background .12s;
+  }
+  details.cat > summary::-webkit-details-marker{display:none}
+  details.cat > summary:hover{background:rgba(20,22,26,.045)}
+  details.cat > summary::before{
+    content:"";width:5px;height:5px;border-right:1.5px solid var(--muted-2);border-bottom:1.5px solid var(--muted-2);
+    transform:rotate(-45deg);transition:transform .15s;flex:0 0 5px;margin-left:2px;
+  }
+  details.cat[open] > summary::before{transform:rotate(45deg)}
+  .cat__name{font-weight:550}
+  .cat__count{margin-left:auto;font-size:10.5px;color:var(--muted-2);font-variant-numeric:tabular-nums}
+  .kb-list{list-style:none;margin:2px 0 8px;padding:0 0 0 17px}
+  .kb-list button{
+    display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+    font-size:12px;color:var(--muted);padding:4px 8px;border-radius:7px;line-height:1.5;
+  }
+  .kb-list button:hover{background:rgba(17,107,90,.07);color:var(--jade-d)}
+
+  .side-foot{padding:14px 20px 18px;border-top:1px solid var(--line-2);font-size:11px;color:var(--muted-2);line-height:1.6}
+  .side-foot a{color:var(--muted);text-decoration:none;border-bottom:1px solid #d9d4c8;padding-bottom:1px}
+  .side-foot a:hover{color:var(--jade);border-color:var(--jade)}
+  .side-foot p{margin:0 0 6px}
+
+  /* ---------- chat column ---------- */
+  .chat{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .topbar{
+    display:flex;align-items:center;gap:10px;padding:12px 22px;min-height:64px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(246,244,239,.94), rgba(246,244,239,.78));
+    backdrop-filter:blur(12px);position:relative;z-index:2;
+  }
+  .topbar__title{display:flex;align-items:baseline;gap:9px;min-width:0}
+  .topbar__title h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em;white-space:nowrap}
+  .topbar__title span{font-size:11.5px;color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar__spacer{flex:1}
+  .model-chip{
+    display:inline-flex;align-items:center;gap:7px;max-width:250px;
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:5px 11px;font-size:11.5px;color:var(--ink-2);cursor:pointer;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .model-chip:hover{border-color:#cfc9bb;box-shadow:var(--shadow-sm)}
+  .model-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:11px}
+  .model-chip i{width:6px;height:6px;border-radius:50%;background:var(--jade);flex:0 0 6px}
+  .icon-btn{
+    width:36px;height:36px;border-radius:10px;border:1px solid transparent;background:transparent;
+    display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:background .12s,color .12s;
+  }
+  .icon-btn:hover{background:rgba(20,22,26,.055);color:var(--ink)}
+  .icon-btn--menu{display:none}
+
+  .messages{flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+  .messages::-webkit-scrollbar{width:11px}
+  .messages::-webkit-scrollbar-thumb{background:#ddd8cc;border-radius:8px;border:3px solid transparent;background-clip:content-box}
+  .messages::-webkit-scrollbar-thumb:hover{background:#cbc5b6;background-clip:content-box;border:3px solid transparent}
+  .thread{width:100%;max-width:860px;margin:0 auto;padding:30px 26px 20px}
+
+  /* ---------- empty state ---------- */
+  .hero{padding:22px 0 6px;animation:rise .45s ease both}
+  .hero__mark{
+    width:54px;height:54px;border-radius:16px;display:grid;place-items:center;
+    background:linear-gradient(160deg,#177a66,#0b4b3f);color:#fff;
+    font-family:var(--font-serif);font-size:20px;
+    box-shadow:0 14px 30px -14px rgba(12,83,70,.9), inset 0 1px 0 rgba(255,255,255,.24);
+    margin-bottom:20px;
+  }
+  .hero h2{
+    font-family:var(--font-serif);font-weight:500;font-size:34px;line-height:1.28;
+    letter-spacing:-.01em;margin:0 0 10px;
+  }
+  .hero h2 em{font-style:normal;color:var(--jade);position:relative;white-space:nowrap}
+  .hero p{margin:0 0 6px;color:var(--muted);font-size:14px;max-width:48ch}
+  .hero__meta{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 26px}
+  .tag{
+    font-size:11px;color:var(--ink-2);background:rgba(255,255,255,.72);
+    border:1px solid var(--line);border-radius:999px;padding:3px 10px;
+  }
+  .tag--jade{color:var(--jade-d);background:var(--jade-soft);border-color:#cfe5dd}
+  .sugs{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:700px}
+  .sug{
+    text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:13px 15px;cursor:pointer;transition:transform .15s, box-shadow .18s, border-color .15s;
+  }
+  .sug:hover{transform:translateY(-1px);border-color:#cfc9bb;box-shadow:var(--shadow-sm)}
+  .sug b{display:block;font-size:13px;font-weight:600;margin-bottom:3px;letter-spacing:.01em}
+  .sug span{font-size:11.5px;color:var(--muted);line-height:1.5}
+  .sug__q{color:var(--jade);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px}
+
+  /* ---------- messages ---------- */
+  .msg{display:flex;gap:11px;margin:0 0 26px;animation:rise .32s ease both}
+  .msg--user{justify-content:flex-end;gap:0}
+  .avatar{
+    width:30px;height:30px;flex:0 0 30px;border-radius:9px;margin-top:2px;
+    background:linear-gradient(160deg,#177a66,#0b4b3f);color:#fff;
+    display:grid;place-items:center;font-family:var(--font-serif);font-size:10px;
+    box-shadow:0 4px 10px -6px rgba(12,83,70,.9);
+  }
+  .msg--user .avatar{display:none}
+  .bubble{
+    max-width:min(680px,100%);background:var(--panel);border:1px solid var(--line);
+    border-radius:4px 16px 16px 16px;padding:14px 17px;box-shadow:var(--shadow-sm);
+    font-size:14.5px;line-height:1.75;overflow-wrap:anywhere;
+  }
+  .msg--user .bubble{
+    background:linear-gradient(160deg,#1d2229,#14161a);color:#f6f5f1;border-color:#14161a;
+    border-radius:16px 4px 16px 16px;box-shadow:0 10px 22px -14px rgba(20,22,26,.7);
+    max-width:min(560px,86%);
+  }
+  .stack{display:flex;flex-direction:column;gap:7px;min-width:0;max-width:100%}
+  .rich p{margin:0 0 9px}
+  .rich p:last-child{margin-bottom:0}
+  .rich ol,.rich ul{margin:4px 0 9px;padding-left:1.35em}
+  .rich li{margin:3px 0;padding-left:.15em}
+  .rich li::marker{color:var(--jade);font-variant-numeric:tabular-nums}
+  .rich strong{font-weight:650;color:#0f2b25}
+  .rich code{font-family:var(--mono);font-size:.9em;background:#f2f0ea;border:1px solid var(--line-2);padding:1px 5px;border-radius:5px}
+  .rich a{color:var(--jade);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+  .cite{
+    display:inline-block;font-size:10px;font-weight:600;color:var(--jade-d);
+    background:var(--jade-soft);border-radius:5px;padding:0 4px;margin-left:1px;
+    vertical-align:1px;font-variant-numeric:tabular-nums;line-height:1.6;
+  }
+  .msg-note{font-size:11px;color:var(--muted-2);padding-left:1px}
+
+  .meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding-left:1px}
+  .chip-btn{
+    display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid transparent;
+    border-radius:8px;padding:3px 7px;font-size:11px;color:var(--muted);cursor:pointer;
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .chip-btn:hover{background:rgba(17,107,90,.07);color:var(--jade-d);border-color:#d7e8e2}
+  .chip-btn svg{opacity:.75}
+  .sources{margin-top:1px;border-left:2px solid #dcebe6;padding-left:10px}
+  .src{border-radius:10px;padding:2px 0 8px}
+  .src + .src{border-top:1px solid var(--line-2);padding-top:9px}
+  .src__head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+  .src__n{font-family:var(--mono);font-size:10px;color:var(--jade-d);background:var(--jade-soft);border-radius:4px;padding:0 4px}
+  .src__title{font-size:12px;font-weight:600}
+  .src__cat{font-size:10.5px;color:var(--muted-2);border:1px solid var(--line);border-radius:999px;padding:0 6px}
+  .src__text{font-size:12px;color:var(--muted);line-height:1.65;margin:0}
+  .sources__more{font-size:10.5px;color:var(--muted-2);padding-top:2px}
+
+  .typing{display:inline-flex;align-items:center;gap:4px;height:20px}
+  .typing i{width:5px;height:5px;border-radius:50%;background:#9aa2ad;display:block;animation:blink 1.25s infinite}
+  .typing i:nth-child(2){animation-delay:.16s}
+  .typing i:nth-child(3){animation-delay:.32s}
+  .typing span{font-size:11.5px;color:var(--muted-2);margin-left:5px}
+  .cursor{display:inline-block;width:2px;height:1.05em;background:var(--jade);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(2) infinite}
+
+  .msg--error .bubble{background:var(--danger-soft);border-color:#f2c9c5;color:#7a1a12}
+  .msg--error .bubble a{color:#7a1a12}
+
+  /* ---------- composer ---------- */
+  .composer-wrap{
+    position:relative;padding:6px 26px 16px;
+    background:linear-gradient(to top, var(--paper) 55%, rgba(246,244,239,0));
+  }
+  .composer{width:100%;max-width:860px;margin:0 auto}
+  .box{
+    display:flex;align-items:flex-end;gap:8px;background:var(--panel);
+    border:1px solid var(--line);border-radius:18px;padding:9px 9px 9px 16px;
+    box-shadow:var(--shadow-md);transition:border-color .15s, box-shadow .15s;
+  }
+  .box:focus-within{border-color:#9cc7bb;box-shadow:0 0 0 4px rgba(17,107,90,.09), var(--shadow-md)}
+  .box textarea{
+    flex:1;border:0;outline:0;resize:none;background:transparent;
+    font:inherit;font-size:14.5px;line-height:1.6;color:var(--ink);
+    max-height:150px;min-height:26px;padding:5px 0;
+  }
+  .box textarea::placeholder{color:#a4abb5}
+  .send{
+    width:38px;height:38px;flex:0 0 38px;border-radius:12px;border:0;cursor:pointer;
+    background:linear-gradient(160deg,#177a66,#0c5346);color:#fff;
+    display:grid;place-items:center;transition:transform .12s, opacity .15s, background .15s;
+    box-shadow:0 6px 14px -8px rgba(12,83,70,.9);
+  }
+  .send:hover{transform:translateY(-1px)}
+  .send:disabled{opacity:.38;cursor:default;transform:none;box-shadow:none}
+  .send--stop{background:#2a2f37}
+  .hint{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:8px 4px 0;font-size:10.5px;color:var(--muted-2);line-height:1.5;
+  }
+  .hint kbd{
+    font-family:var(--mono);font-size:9.5px;background:#efede6;border:1px solid #e2ded3;
+    border-bottom-width:2px;border-radius:4px;padding:0 4px;color:var(--muted);
+  }
+  .hint__right{display:flex;gap:12px;align-items:center;white-space:nowrap}
+
+  /* ---------- overlays ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(20,22,26,.28);z-index:35;backdrop-filter:blur(2px)}
+  .gate{
+    position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:22px;
+    background:rgba(20,22,26,.34);backdrop-filter:blur(10px);
+    animation:fade .2s ease both;overflow:auto;
+  }
+  .gate-card{
+    width:min(462px,100%);background:var(--paper-2);border:1px solid rgba(255,255,255,.6);
+    border-radius:24px;padding:30px 30px 24px;box-shadow:0 40px 90px -30px rgba(10,15,14,.55);
+    animation:pop .26s cubic-bezier(.2,.8,.3,1) both;
+  }
+  .gate-card .mark{width:44px;height:44px;border-radius:13px;font-size:17px;margin-bottom:16px}
+  .gate-card h2{font-family:var(--font-serif);font-size:25px;font-weight:500;margin:0 0 7px;letter-spacing:-.01em}
+  .gate-card > p{margin:0 0 18px;font-size:13px;color:var(--muted);line-height:1.7}
+  .field{margin-bottom:13px}
+  .field > label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:6px;letter-spacing:.02em}
+  .input-wrap{position:relative;display:flex;align-items:center}
+  .input-wrap input{
+    width:100%;font:inherit;font-size:13.5px;padding:11px 74px 11px 13px;border-radius:11px;
+    border:1px solid var(--line);background:#fff;outline:0;font-family:var(--mono);letter-spacing:.02em;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .input-wrap input:focus{border-color:#9cc7bb;box-shadow:0 0 0 4px rgba(17,107,90,.09)}
+  .input-actions{position:absolute;right:6px;display:flex;gap:2px}
+  .mini{
+    border:0;background:transparent;color:var(--muted);font-size:11px;cursor:pointer;
+    padding:5px 7px;border-radius:7px;line-height:1;
+  }
+  .mini:hover{background:rgba(20,22,26,.06);color:var(--ink)}
+  .choice{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--ink-2);margin:11px 0 4px;flex-wrap:wrap}
+  .choice label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .choice input{accent-color:var(--jade)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border-radius:11px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:10px 15px;font-size:13px;font-weight:600;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .12s;
+  }
+  .btn:hover{background:#faf9f5;border-color:#d3cec1}
+  .btn--primary{background:linear-gradient(160deg,#177a66,#0c5346);border-color:#0c5346;color:#fff;box-shadow:0 8px 18px -12px rgba(12,83,70,.9)}
+  .btn--primary:hover{background:linear-gradient(160deg,#1a8670,#0d5b4c);border-color:#0d5b4c}
+  .btn--block{width:100%;padding:12px}
+  .btn--danger{color:var(--danger);border-color:#f0d3d0}
+  .btn--danger:hover{background:var(--danger-soft)}
+  .gate-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
+  .gate-foot button{background:none;border:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:11.5px;padding:2px}
+  .gate-foot a{color:var(--muted);text-decoration:underline}
+  .err{color:var(--danger);font-size:11.5px;margin:8px 0 0;min-height:16px}
+  .privacy{
+    display:flex;gap:9px;align-items:flex-start;margin-top:16px;padding:10px 12px;
+    background:var(--jade-soft-2);border:1px solid #d9ebe5;border-radius:11px;
+    font-size:11px;color:#3c5c54;line-height:1.6;
+  }
+  .privacy svg{flex:0 0 14px;margin-top:2px}
+
+  dialog{
+    border:0;padding:0;border-radius:22px;background:var(--paper-2);color:var(--ink);
+    width:min(540px,calc(100vw - 32px));box-shadow:0 40px 90px -30px rgba(10,15,14,.55);
+  }
+  dialog::backdrop{background:rgba(20,22,26,.34);backdrop-filter:blur(8px)}
+  .dlg-head{display:flex;align-items:flex-start;gap:12px;padding:24px 26px 0}
+  .dlg-head h2{margin:0;font-family:var(--font-serif);font-size:21px;font-weight:500;letter-spacing:-.01em}
+  .dlg-head p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+  .dlg-head .icon-btn{margin-left:auto;flex:0 0 auto}
+  .dlg-body{padding:18px 26px 8px}
+  .dlg-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 26px 22px;flex-wrap:wrap}
+  .row{display:flex;gap:8px;align-items:center}
+  .row .btn{white-space:nowrap}
+  .hint-line{font-size:11px;color:var(--muted-2);margin:6px 0 0;line-height:1.6}
+  .key-state{display:flex;align-items:center;gap:8px;font-size:12px;margin:0 0 14px;padding:9px 12px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+  .key-state b{font-family:var(--mono);font-weight:500;font-size:11.5px}
+  .key-state span{margin-left:auto;font-size:10.5px;padding:2px 8px;border-radius:999px;background:var(--jade-soft);color:var(--jade-d)}
+  .key-state span.off{background:#f2f0ea;color:var(--muted)}
+  .field input[type="text"]{
+    width:100%;font:inherit;font-size:13px;padding:10px 12px;border-radius:10px;
+    border:1px solid var(--line);background:#fff;outline:0;
+  }
+  .field input[type="text"]:focus{border-color:#9cc7bb;box-shadow:0 0 0 4px rgba(17,107,90,.09)}
+  .field select{
+    width:100%;font:inherit;font-size:13px;padding:10px 12px;border-radius:10px;
+    border:1px solid var(--line);background:#fff;outline:0;
+  }
+  .test-out{font-size:11.5px;margin:8px 0 0;min-height:16px;line-height:1.5}
+  .test-out.ok{color:var(--jade-d)}
+  .test-out.bad{color:var(--danger)}
+
+  /* reader */
+  #reader .dlg-body{padding-bottom:4px;max-height:62vh;overflow:auto}
+  .read-cat{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin:0 0 6px}
+  .read-title{font-family:var(--font-serif);font-size:22px;font-weight:500;margin:0 0 12px;line-height:1.35}
+  .read-text{font-size:14px;line-height:1.85;color:var(--ink-2);margin:0}
+  .read-note{font-size:11px;color:var(--muted-2);margin-top:16px;padding-top:12px;border-top:1px solid var(--line-2)}
+
+  @keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+  @media (max-width:960px){
+    .app{grid-template-columns:minmax(0,1fr)}
+    .sidebar{
+      position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);z-index:40;
+      transform:translateX(-101%);transition:transform .24s cubic-bezier(.2,.8,.3,1);
+      background:var(--paper-2);box-shadow:0 0 60px rgba(0,0,0,.2);
+    }
+    .sidebar.open{transform:none}
+    .icon-btn--menu{display:grid}
+    .thread{padding:24px 18px 16px}
+    .composer-wrap{padding:6px 14px 12px}
+    .hero h2{font-size:27px}
+    .sugs{grid-template-columns:1fr}
+    .hero{padding-top:10px}
+    .topbar{padding:11px 14px}
+    .topbar__title span{display:none}
+    .model-chip{max-width:150px}
+  }
+  @media (max-width:560px){
+    .gate-card{padding:24px 20px 18px;border-radius:20px}
+    .bubble{font-size:14px}
+    .messages .thread{padding:12px 14px 10px}
+    .hero{padding-top:2px}
+    .hero__mark{width:44px;height:44px;flex:0 0 44px;border-radius:14px;font-size:17px;margin-bottom:12px}
+    .hero h2{font-size:25px;line-height:1.32}
+    .hero p{font-size:13px}
+    .hero__meta{margin:10px 0 12px}
+    .sugs{gap:8px}
+    .sug{padding:8px 12px}
+    .sug span{line-height:1.45}
+    .hint{justify-content:center}
+    .hint > span:first-child{display:none}
+    .model-chip{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ sidebar ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="知識庫目錄">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">a2o</div>
+      <div class="brand__text">
+        <div class="brand__name">a2o 知識庫</div>
+        <div class="brand__sub">Knowledge Q&amp;A</div>
+      </div>
+      <span class="demo-pill" title="目前載入的是虛構示範資料">示範</span>
+    </div>
+
+    <div class="side-block">
+      <p class="side-label">連線狀態</p>
+      <button class="status" id="statusBtn" type="button">
+        <span class="dot" id="statusDot" aria-hidden="true"></span>
+        <span class="status__txt">
+          <b id="statusTitle">未設定 API Key</b>
+          <span id="statusSub">點這裡貼上你的 Groq 金鑰</span>
+        </span>
+        <span class="status__chev" aria-hidden="true">›</span>
+      </button>
+    </div>
+
+    <div class="kb-tree" id="kbTree" aria-label="知識庫段落"></div>
+
+    <div class="side-foot">
+      <p id="kbStats">載入中…</p>
+      <p>示範資料為虛構內容，公司、人物、價格皆非真實。</p>
+      <p><a href="#" id="replaceHint">怎麼換成自己的知識庫？</a></p>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============ chat ============ -->
+  <main class="chat">
+    <header class="topbar">
+      <button class="icon-btn icon-btn--menu" id="menuBtn" type="button" aria-label="開啟目錄">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="topbar__title">
+        <h1>知識庫問答</h1>
+        <span id="topbarSub">答案只從知識庫來，沒寫的會說沒有</span>
+      </div>
+      <div class="topbar__spacer"></div>
+      <button class="model-chip" id="modelChip" type="button" title="變更模型">
+        <i aria-hidden="true"></i><span id="modelName">llama-3.3-70b-versatile</span>
+      </button>
+      <button class="icon-btn" id="clearBtn" type="button" aria-label="清空對話" title="清空對話">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
+      </button>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="設定" title="設定">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.56 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+      </button>
+    </header>
+
+    <div class="messages" id="messages" aria-live="polite">
+      <div class="thread" id="thread">
+        <section class="hero" id="hero">
+          <div class="hero__mark" aria-hidden="true">a2o</div>
+          <h2>問一句，答案<br />只從<em>知識庫</em>裡來。</h2>
+          <p>每個回答都會標出引用段落。知識庫沒寫的，它會直接說沒有——不會幫你補故事。</p>
+          <div class="hero__meta">
+            <span class="tag tag--jade" id="heroCount">21 段 · 10 類</span>
+            <span class="tag">台灣繁體中文</span>
+            <span class="tag">金鑰只留在瀏覽器</span>
+            <span class="tag">示範資料，非真實</span>
+          </div>
+          <div class="sugs" id="sugs"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="box">
+          <label class="sr-only" for="input">輸入你的問題</label>
+          <textarea id="input" rows="1" placeholder="例如：修改次數有幾次？急件要加多少？" autocomplete="off" spellcheck="false"></textarea>
+          <button class="send" id="sendBtn" type="button" aria-label="送出問題" title="送出（Enter）">
+            <svg id="sendIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+          </button>
+        </div>
+        <div class="hint">
+          <span>回答由 Groq 生成，重要內容請自行核對。<kbd>Enter</kbd> 送出 · <kbd>Shift</kbd>+<kbd>Enter</kbd> 換行</span>
+          <span class="hint__right"><span>金鑰不會離開這個瀏覽器</span><span id="kbCountHint">21 段</span></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ key gate ============ -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+  <div class="gate-card">
+    <div class="mark" aria-hidden="true">a2o</div>
+    <h2 id="gateTitle">先放入你的 Groq 金鑰</h2>
+    <p>這個頁面沒有後端。你的問題會直接從瀏覽器送到 Groq，所以需要你自己的 API Key。金鑰只存在這台裝置的瀏覽器裡，不會上傳到任何地方、也不會寫進程式碼。</p>
+
+    <form id="gateForm" novalidate>
+      <div class="field">
+        <label for="keyInput">Groq API Key</label>
+        <div class="input-wrap">
+          <input id="keyInput" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false" aria-describedby="gateErr" />
+          <div class="input-actions">
+            <button class="mini" type="button" id="toggleKey" aria-label="顯示金鑰">顯示</button>
+            <button class="mini" type="button" id="pasteKey" aria-label="貼上">貼上</button>
+          </div>
+        </div>
+        <p class="err" id="gateErr" role="alert"></p>
+      </div>
+
+      <div class="choice">
+        <label><input type="radio" name="persist" value="local" checked /> 記住這台裝置</label>
+        <label><input type="radio" name="persist" value="session" /> 只在這次工作階段</label>
+      </div>
+
+      <button class="btn btn--primary btn--block" type="submit" id="gateStart">開始使用</button>
+    </form>
+
+    <div class="privacy">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#116b5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <span>金鑰存在 <code style="font-family:var(--mono)">localStorage</code>，只有這個網域讀得到。公用電腦請選「只在這次工作階段」，關掉頁面就消失。</span>
+    </div>
+
+    <div class="gate-foot">
+      <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">取得免費金鑰 ↗</a>
+      <button type="button" id="gateSkip">先看看介面</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ settings ============ -->
+<dialog id="settings" aria-labelledby="setTitle">
+  <div class="dlg-head">
+    <div>
+      <h2 id="setTitle">設定</h2>
+      <p>金鑰與模型只存在這台裝置。</p>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="關閉">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <div class="key-state">
+      <span class="dot" id="setDot" aria-hidden="true"></span>
+      <b id="setKeyMask">尚未設定</b>
+      <span class="off" id="setKeyState">未連線</span>
+    </div>
+
+    <div class="field">
+      <label for="setKey">Groq API Key</label>
+      <div class="input-wrap">
+        <input id="setKey" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false" />
+        <div class="input-actions"><button class="mini" type="button" id="setToggle">顯示</button></div>
+      </div>
+      <p class="hint-line">換金鑰就直接覆蓋。按「測試」會向 Groq 要一次模型清單，不會產生費用。</p>
+    </div>
+
+    <div class="row" style="margin:0 0 16px">
+      <button class="btn" type="button" id="testKey">測試連線</button>
+      <button class="btn btn--danger" type="button" id="clearKey">清除金鑰</button>
+    </div>
+    <p class="test-out" id="testOut" role="status"></p>
+
+    <div class="field" style="margin-top:14px">
+      <label for="setModel">模型</label>
+      <input id="setModel" type="text" list="modelList" spellcheck="false" autocomplete="off" />
+      <datalist id="modelList">
+        <option value="llama-3.3-70b-versatile">平衡，預設</option>
+        <option value="llama-3.1-8b-instant">最快、最省</option>
+        <option value="openai/gpt-oss-120b">推理較強</option>
+        <option value="openai/gpt-oss-20b">推理，較快</option>
+        <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout</option>
+      </datalist>
+      <p class="hint-line">Groq 若下架某個模型，這裡會出現 404，換一個就好。清單可以自己打。</p>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn" type="button" data-close>取消</button>
+    <button class="btn btn--primary" type="button" id="saveSettings">儲存</button>
+  </div>
+</dialog>
+
+<!-- ============ reader ============ -->
+<dialog id="reader" aria-labelledby="readTitle">
+  <div class="dlg-head">
+    <div>
+      <p class="read-cat" id="readCat">段落</p>
+      <h2 class="read-title" id="readTitle">—</h2>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="關閉">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <p class="read-text" id="readText">—</p>
+    <p class="read-note">這是目前載入的知識庫原文。示範資料為虛構內容。</p>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn btn--primary" type="button" id="readAsk">用這段提問</button>
+  </div>
+</dialog>
+
+<noscript>
+  <div style="position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#f6f4ef;padding:24px;text-align:center">
+    <p style="max-width:36ch;color:#3a404a">這個頁面需要開啟 JavaScript 才能使用。請在瀏覽器設定中允許 JavaScript 後重新整理。</p>
+  </div>
+</noscript>
+
+<script>
+/* ==== KB+ENGINE START ==== */
+/* 示範知識庫：全部為虛構內容（公司、人物、價格、日期皆非真實）。
+   要換成自己的資料，只要改這個陣列：每一筆 = 一段獨立的知識。
+   { cat: "分類", title: "段落標題", text: "段落內容" } */
+const KB = [
+  { cat:"關於 a2o", title:"a2o 是什麼", text:"a2o 是一間虛構的品牌顧問與內容製作工作室，成立於 2019 年，目前 7 人。主要幫中小企業整理品牌定位、製作官方網站與社群素材，也承接影片拍攝與剪輯。a2o 不賣軟體，也不做廣告投放代操。" },
+  { cat:"關於 a2o", title:"服務範圍", text:"服務分四類：一、品牌定位與命名；二、網站與 landing page 設計；三、社群圖文與短影音；四、教育訓練與內訓課程。純攝影棚租借、電商代營運、廣告投放代操不在服務範圍。" },
+  { cat:"方案與報價", title:"三種合作方案", text:"方案分三種。A「啟動版」適合新品牌，含品牌定位工作坊 1 場、識別設計 1 套、社群版型 6 款，價格 18 萬元。B「成長版」加官網 5 頁與 3 支短影音，價格 42 萬元。C「夥伴版」為期一年，每月固定 12 萬元，含每月 8 張圖、2 支影片與季度健檢。以上皆為未稅價。" },
+  { cat:"方案與報價", title:"報價與追加", text:"報價單有效期 30 天。需求超出原定範圍時，先估工時再追加，追加金額需雙方書面確認才動工。單次追加低於 5,000 元由專案經理吸收，不另請款。" },
+  { cat:"合作流程", title:"五個合作階段", text:"流程五階段：1. 需求訪談（免費，60 分鐘）；2. 提案與報價（3 個工作日內）；3. 簽約與付訂金（合約總額 40%）；4. 製作與每週進度回報；5. 驗收與尾款。從簽約到交付，啟動版約 4 週、成長版約 8 週、夥伴版依月度排程。" },
+  { cat:"合作流程", title:"提案前要準備的資料", text:"提案前請準備：公司或品牌現況簡介、3 個喜歡與 3 個不喜歡的參考案例、目標客群描述、這次一定要解決的問題、決策者名單。缺少參考案例不影響提案，但會多一次來回。" },
+  { cat:"修改與驗收", title:"修改次數與範圍", text:"每個階段含 2 輪修改。第 3 輪起每輪加收 3,000 元。修改指在原方向上調整；換方向、換客群、換主視覺視為新需求，需重新報價。文字錯字與連結錯誤不計入修改次數。" },
+  { cat:"修改與驗收", title:"驗收標準", text:"驗收以提案時確認的規格為準：尺寸、檔案格式、頁面數量、影片長度。交付後 7 個工作日內未提出書面意見，視為驗收完成。驗收完成後進入保固，保固期 30 天，只修錯誤，不加功能。" },
+  { cat:"付款與發票", title:"付款方式", text:"簽約付 40% 訂金，交付前付 60% 尾款。夥伴版按月計費，每月 5 日前出帳，15 日前付款。匯款手續費由客戶負擔。逾期未付超過 14 天，專案暫停，重啟需重新排程。" },
+  { cat:"付款與發票", title:"發票與報帳", text:"一律開立電子發票，品項為「設計服務費」。二聯或三聯請在簽約時告知，發票開立後變更需收回原票，約 7 個工作日。國外客戶可開立 Invoice，付款幣別為新台幣或美元。" },
+  { cat:"交付與檔案", title:"交付格式", text:"設計檔交付 AI、PDF、PNG、SVG；網頁交付原始碼與部署說明；影片交付 MP4（H.264，1080p）與字幕 SRT。原始工作檔（PSD、PRPROJ）為加購項目，費用為該項目 20%。" },
+  { cat:"交付與檔案", title:"檔案保存期限", text:"專案結案後，a2o 保留檔案 12 個月，期滿刪除。需要長期保存請自行下載，或加購「檔案保管」每年 6,000 元。雲端連結有效期 30 天，過期可重新索取一次。" },
+  { cat:"保密與個資", title:"保密與 NDA", text:"預設保密，不主動公開未上線的專案。客戶可要求簽署 NDA，a2o 提供公版，也可配合客戶版本，審閱約 3 個工作日。公開作品集需客戶書面同意，可要求延後 6 個月或匿名處理。" },
+  { cat:"保密與個資", title:"客戶資料處理", text:"客戶提供的名單、問卷、客服紀錄，只用於本次專案，結案後 30 天內刪除。不放入任何公開 AI 服務；需要 AI 輔助時，先去除姓名、電話、身分證號與帳號。若涉及歐盟使用者，另簽資料處理附錄。" },
+  { cat:"窗口與溝通", title:"聯絡窗口與回覆時間", text:"每個專案配 1 位專案經理（PM），為唯一窗口。工作日 10:00–18:00，訊息 4 小時內回覆；18:00 後與週末訊息順延至下一個工作日。急件請電話聯絡，並在訊息標題加「急件」。" },
+  { cat:"窗口與溝通", title:"會議與決策", text:"每次會議後 1 個工作日內提供會議紀錄，列出決議、待辦、負責人與期限。客戶回覆「確認」即視為決策成立。需要重新決策時，以最新書面紀錄為準。" },
+  { cat:"常見問題", title:"急件怎麼處理", text:"急件定義為 5 個工作日內要交付。急件加收 30%，且需視當週排程決定是否承接。連假前後與 12 月不保證接急件。" },
+  { cat:"常見問題", title:"可以終止合作嗎", text:"任一階段都可書面終止。已完成的工作按比例計價，訂金不退；未使用的預付款扣除 10% 行政費後退還。終止後 7 個工作日內結清。" },
+  { cat:"常見問題", title:"著作權歸屬", text:"尾款結清後，最終交付物的著作財產權移轉給客戶。a2o 保留署名與作品集展示權（可談匿名）。未採用的提案，著作權仍屬 a2o。字體與圖庫授權依原廠條款，可能需要客戶另行購買。" },
+  { cat:"內部作業", title:"請款與核銷", text:"內部請款：填「支出申請單」，附發票或收據。10,000 元以下由 PM 核准，以上由負責人核准。核銷於每週三統一送件，隔週五匯款。代墊款需在 14 天內申請。" },
+  { cat:"內部作業", title:"素材授權檢查", text:"對外素材上線前要確認四件事：字體是否為商用授權、圖片是否有授權證明、音樂是否為免版稅、人物是否簽肖像同意書。四項缺一項就不能上線，由 PM 在交付檢查表打勾。" },
+  { cat:"使用說明", title:"怎麼換成自己的知識庫", text:"打開 index.html，搜尋「KB+ENGINE START」。KB 是一個陣列，每一筆就是一段知識：{ cat: \"分類\", title: \"段落標題\", text: \"段落內容\" }。改完存檔、重新整理即可。段落數量沒有限制，但 30 段以內檢索最準。不需要重新訓練，也不需要上傳到任何伺服器。" }
+];
+
+KB.forEach((c, i) => { c.id = 'kb-' + String(i + 1).padStart(2, '0'); });
+
+const KB_STOP = new Set(('的 了 是 在 我 你 他 她 它 們 嗎 呢 吧 啊 有 和 與 或 就 都 也 要 會 把 被 這 那 個 些 可以 如何 什麼 怎麼 為什麼 請問 一下 幫我 告訴 想 知道 關於 不是 多少 幾 哪 裡 是否 還有 以及 但是 因為 所以 如果 我們 你們 他們 ' +
+  '有人 們有 有幾 幾個 幾位 個人 哪些 哪個 這個 那個 甚麼 哪裡 在哪 是誰 有沒有 這樣 那樣 什麼 怎麼 如何 多少 可以 請問 是否 還有 ' +
+  '是什 麼是 是什麼 為何 為什麼 哪種 怎樣 怎麼樣').split(' '));
+
+/* 把口語問法換成知識庫裡比較可能出現的詞 */
+const KB_NORMALIZE = [
+  [/多少錢|價錢|費用|報價|收費|價格多少/g, '價格'],
+  [/幾個人|多少人|幾位|員工|人數/g, '人'],
+  [/解約|退出/g, '終止'],
+  [/版權/g, '著作權'],
+  [/改稿|改幾次/g, '修改'],
+  [/趕件/g, '急件'],
+  [/統編/g, '發票']
+];
+function kbNormalize(q) {
+  let s = String(q);
+  for (const [re, to] of KB_NORMALIZE) s = s.replace(re, to);
+  return s;
+}
+
+function kbAnalyze(s) {
+  const t = String(s).toLowerCase();
+  const arr = [];
+  const push = (term, n) => { for (let i = 0; i < n; i++) arr.push(term); };
+  (t.match(/[a-z0-9][a-z0-9._-]*/g) || []).forEach(w => push(w, 3));
+  (t.match(/[\u4e00-\u9fff]+/g) || []).forEach(run => {
+    for (let i = 0; i < run.length; i++) {
+      if (!KB_STOP.has(run[i])) push(run[i], 1);
+      if (i < run.length - 1) {
+        const bi = run.slice(i, i + 2);
+        if (!KB_STOP.has(bi)) push(bi, 3);
+      }
+    }
+    if (run.length >= 3 && [...run].filter(ch => !KB_STOP.has(ch)).length >= 2) push(run, 4);
+  });
+  return arr;
+}
+
+const KB_INDEX = (() => {
+  const docs = KB.map(chunk => {
+    const body = kbAnalyze(chunk.title + ' ' + chunk.cat + ' ' + chunk.text);
+    const title = kbAnalyze(chunk.title + ' ' + chunk.cat);
+    const tf = new Map();
+    body.forEach(t => tf.set(t, (tf.get(t) || 0) + 1));
+    const ttf = new Set(title);
+    return { chunk, tf, ttf, len: body.length };
+  });
+  const df = new Map();
+  docs.forEach(d => { new Set(d.tf.keys()).forEach(t => df.set(t, (df.get(t) || 0) + 1)); });
+  const N = docs.length;
+  const idf = new Map();
+  df.forEach((n, t) => idf.set(t, Math.log((N + 1) / (n + 0.5)) + 1));
+  const maxIdf = Math.log((N + 1) / 0.5) + 1;
+  return { docs, idf, maxIdf };
+})();
+
+/* 回傳排序後的段落；score 0–1，coverage 0–1 */
+function searchKB(query, topK) {
+  const k = topK || 4;
+  const qArr = kbAnalyze(kbNormalize(query));
+  if (!qArr.length) return { hits: [], best: null };
+  const q = new Map();
+  qArr.forEach(t => q.set(t, (q.get(t) || 0) + 1));
+
+  const scored = KB_INDEX.docs.map(({ chunk, tf, ttf }) => {
+    let sum = 0, qsum = 0, hitW = 0, totalW = 0;
+    q.forEach((qw, term) => {
+      const idf = KB_INDEX.idf.get(term) || KB_INDEX.maxIdf;
+      const w = qw * idf;
+      qsum += w;
+      totalW += qw;
+      const f = tf.get(term) || 0;
+      if (f > 0) {
+        hitW += qw;
+        const titleBoost = ttf.has(term) ? 1.55 : 1;
+        sum += w * (1 + Math.log(f)) * titleBoost;
+      }
+    });
+    return {
+      chunk,
+      score: qsum ? sum / qsum : 0,
+      coverage: totalW ? hitW / totalW : 0,
+      titleHit: [...q.keys()].some(t => t.length > 1 && ttf.has(t))
+    };
+  });
+
+  scored.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
+  const best = scored[0] || null;
+  const relevant = !!best && (best.score >= 0.19 || best.coverage >= 0.42 || (best.titleHit && best.coverage >= 0.2));
+  const hits = relevant
+    ? scored.filter(s => s.score >= 0.06 || s.coverage >= 0.12).slice(0, k)
+    : [];
+  return { hits, best, relevant };
+}
+
+/* ==== KB+ENGINE END ==== */
+
+/* ---------- 小工具 ---------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function inlineMd(s) {
+  let out = esc(s);
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+  out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/(https?:\/\/[^\s<)）]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  out = out.replace(/\[(\d{1,2})\]/g, '<span class="cite">[$1]</span>');
+  return out;
+}
+
+function renderRich(text) {
+  const lines = String(text).replace(/\r/g, '').split('\n');
+  let html = '', list = null;
+  const flush = () => { if (list) { html += '</' + list + '>'; list = null; } };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) { flush(); continue; }
+    const ol = line.match(/^\s*(\d{1,2})[.)]\s+(.*)$/);
+    const ul = line.match(/^\s*[-*•]\s+(.*)$/);
+    if (ol) {
+      if (list !== 'ol') { flush(); html += '<ol>'; list = 'ol'; }
+      html += '<li>' + inlineMd(ol[2]) + '</li>';
+    } else if (ul) {
+      if (list !== 'ul') { flush(); html += '<ul>'; list = 'ul'; }
+      html += '<li>' + inlineMd(ul[1]) + '</li>';
+    } else {
+      flush();
+      html += '<p>' + inlineMd(line) + '</p>';
+    }
+  }
+  flush();
+  return html || '<p></p>';
+}
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+  sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
+  sdel(k) { try { sessionStorage.removeItem(k); } catch (e) {} }
+};
+
+const LS_KEY = 'a2o.groq.key';
+const SS_KEY = 'a2o.groq.key.session';
+const LS_MODEL = 'a2o.groq.model';
+const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+const TOP_K = 4;
+const MAX_HISTORY = 8;
+
+const state = {
+  key: store.get(LS_KEY) || store.sget(SS_KEY) || '',
+  model: store.get(LS_MODEL) || DEFAULT_MODEL,
+  busy: false,
+  ctrl: null,
+  history: [],
+  autoScroll: true
+};
+
+/* ---------- 目錄 ---------- */
+const CATS = [...new Set(KB.map(c => c.cat))];
+
+function buildTree() {
+  const tree = $('kbTree');
+  tree.innerHTML = '';
+  CATS.forEach((cat, ci) => {
+    const items = KB.filter(c => c.cat === cat);
+    const d = document.createElement('details');
+    d.className = 'cat';
+    if (ci === 0) d.open = true;
+    const sum = document.createElement('summary');
+    sum.innerHTML = '<span class="cat__name">' + esc(cat) + '</span><span class="cat__count">' + items.length + '</span>';
+    d.appendChild(sum);
+    const ul = document.createElement('ul');
+    ul.className = 'kb-list';
+    items.forEach(item => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = item.title;
+      b.addEventListener('click', () => openReader(item));
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    d.appendChild(ul);
+    tree.appendChild(d);
+  });
+  $('kbStats').textContent = KB.length + ' 段 · ' + CATS.length + ' 類 · 關鍵字檢索';
+  $('heroCount').textContent = KB.length + ' 段 · ' + CATS.length + ' 類';
+  $('kbCountHint').textContent = KB.length + ' 段';
+}
+
+function openReader(item) {
+  $('readCat').textContent = item.cat;
+  $('readTitle').textContent = item.title;
+  $('readText').textContent = item.text;
+  const dlg = $('reader');
+  dlg.dataset.ask = item.title;
+  closeSidebar();
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+}
+
+/* ---------- 金鑰 ---------- */
+function maskKey(k) {
+  if (!k) return '';
+  return k.length <= 10 ? k.slice(0, 4) + '••••' : k.slice(0, 6) + '••••' + k.slice(-4);
+}
+
+function setKey(k, remember) {
+  state.key = k;
+  if (remember) {
+    store.set(LS_KEY, k);
+    store.sdel(SS_KEY);
+  } else {
+    store.sset(SS_KEY, k);
+    store.del(LS_KEY);
+  }
+  syncKeyUI();
+}
+
+function clearKey() {
+  state.key = '';
+  store.del(LS_KEY);
+  store.sdel(SS_KEY);
+  syncKeyUI();
+}
+
+function syncKeyUI() {
+  const has = !!state.key;
+  $('statusDot').classList.toggle('dot--on', has);
+  $('statusTitle').textContent = has ? '已連線 Groq' : '未設定 API Key';
+  $('statusSub').textContent = has ? maskKey(state.key) + ' · 點擊管理' : '點這裡貼上你的 Groq 金鑰';
+  $('setDot').classList.toggle('dot--on', has);
+  $('setKeyMask').textContent = has ? maskKey(state.key) : '尚未設定';
+  const st = $('setKeyState');
+  st.textContent = has ? '已連線' : '未連線';
+  st.classList.toggle('off', !has);
+}
+
+function openGate() {
+  $('gate').hidden = false;
+  $('gateErr').textContent = '';
+  const inp = $('keyInput');
+  inp.value = '';
+  setTimeout(() => inp.focus(), 60);
+}
+
+function closeGate() { $('gate').hidden = true; }
+
+function validKeyShape(k) { return /^gsk_[A-Za-z0-9]{20,}$/.test(k.trim()); }
+
+/* ---------- 訊息 ---------- */
+const sendIconSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>';
+const stopIconSVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>';
+const copyIconSVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+const srcIconSVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15.5A2.5 2.5 0 0 0 17.5 16H4z"/><path d="M8 7h8M8 11h5"/></svg>';
+
+function threadEl() { return $('thread'); }
+
+function hideHero() {
+  const hero = $('hero');
+  if (hero) hero.style.display = 'none';
+}
+
+function showHero() {
+  const hero = $('hero');
+  if (hero) hero.style.display = '';
+}
+
+function scrollBottom(force) {
+  const el = $('messages');
+  if (force || state.autoScroll) el.scrollTop = el.scrollHeight;
+}
+
+function addUser(text) {
+  hideHero();
+  const row = document.createElement('div');
+  row.className = 'msg msg--user';
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = text;
+  row.appendChild(b);
+  threadEl().appendChild(row);
+  scrollBottom(true);
+}
+
+function addBot() {
+  hideHero();
+  const row = document.createElement('div');
+  row.className = 'msg msg--bot';
+  row.innerHTML =
+    '<div class="avatar" aria-hidden="true">a2o</div>' +
+    '<div class="stack">' +
+      '<div class="bubble"><div class="rich"></div></div>' +
+      '<div class="meta"></div>' +
+      '<div class="sources" hidden></div>' +
+    '</div>';
+  threadEl().appendChild(row);
+  scrollBottom(true);
+  return {
+    row,
+    rich: row.querySelector('.rich'),
+    meta: row.querySelector('.meta'),
+    sources: row.querySelector('.sources')
+  };
+}
+
+function typingNode(label) {
+  const d = document.createElement('div');
+  d.className = 'typing';
+  d.innerHTML = '<i></i><i></i><i></i><span>' + esc(label || '正在查知識庫') + '</span>';
+  return d;
+}
+
+function addSources(ui, hits) {
+  const list = document.createElement('div');
+  list.hidden = true;
+  hits.forEach((h, i) => {
+    const a = document.createElement('article');
+    a.className = 'src';
+    const head = document.createElement('div');
+    head.className = 'src__head';
+    head.innerHTML = '<span class="src__n">[' + (i + 1) + ']</span><span class="src__title">' + esc(h.chunk.title) + '</span><span class="src__cat">' + esc(h.chunk.cat) + '</span>';
+    const p = document.createElement('p');
+    p.className = 'src__text';
+    p.textContent = h.chunk.text;
+    a.appendChild(head);
+    a.appendChild(p);
+    list.appendChild(a);
+  });
+  ui.sources.appendChild(list);
+  ui.sources.hidden = false;
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'chip-btn';
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.innerHTML = srcIconSVG + '<span>來源 ' + hits.length + ' 段</span>';
+  toggle.addEventListener('click', () => {
+    const open = list.hidden;
+    list.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) scrollBottom(false);
+  });
+  ui.meta.appendChild(toggle);
+}
+
+function addCopy(ui, getText) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'chip-btn';
+  btn.innerHTML = copyIconSVG + '<span>複製</span>';
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(getText());
+      btn.querySelector('span').textContent = '已複製';
+      setTimeout(() => { btn.querySelector('span').textContent = '複製'; }, 1600);
+    } catch (e) {
+      btn.querySelector('span').textContent = '複製失敗';
+      setTimeout(() => { btn.querySelector('span').textContent = '複製'; }, 1600);
+    }
+  });
+  ui.meta.appendChild(btn);
+}
+
+function addError(msg, detail) {
+  const row = document.createElement('div');
+  row.className = 'msg msg--bot msg--error';
+  row.innerHTML =
+    '<div class="avatar" aria-hidden="true">!</div>' +
+    '<div class="stack"><div class="bubble"><div class="rich"></div></div><div class="meta"></div></div>';
+  row.querySelector('.rich').innerHTML = renderRich(msg + (detail ? '\n\n' + detail : ''));
+  if (/key|金鑰/i.test(msg)) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn';
+    b.textContent = '開啟設定';
+    b.addEventListener('click', openSettings);
+    row.querySelector('.meta').appendChild(b);
+  }
+  threadEl().appendChild(row);
+  scrollBottom(true);
+}
+
+/* ---------- API ---------- */
+function systemPrompt(hits) {
+  const blocks = hits.map((h, i) => '[' + (i + 1) + ']《' + h.chunk.title + '》（分類：' + h.chunk.cat + '）\n' + h.chunk.text).join('\n\n');
+  return [
+    '你是「a2o 知識庫」的問答助理。你只能根據下面〈知識庫片段〉回答，不能使用片段以外的知識。',
+    '',
+    '規則：',
+    '1. 只用片段裡的資訊回答。片段沒寫的，直接說「知識庫沒有這段」，並指出缺哪一項。不要用常識補。',
+    '2. 用台灣繁體中文，語氣像同事說明，不要客套、不要開場白。',
+    '3. 先給結論（一句話），再列細節。',
+    '4. 有引用就在句尾標編號，例如「每個階段含 2 輪修改 [1]」。編號只能用下面片段有的。',
+    '5. 列點用「1. 2. 3.」，一點一行。不要用表格，不要用 Markdown 標題，不要用表情符號。',
+    '6. 價格、日期、數字、專有名詞必須跟片段完全一致，不要換算、不要推測。',
+    '7. 如果問題與 a2o 知識庫無關（閒聊、時事、別家公司），直接說這不在知識庫範圍內。',
+    '',
+    '〈知識庫片段〉',
+    blocks
+  ].join('\n');
+}
+
+function friendlyError(status, bodyText) {
+  const body = (bodyText || '').slice(0, 400);
+  if (status === 401) return { msg: '金鑰無效或已被撤銷。', detail: '請到 Groq Console 重新產生一組，再貼進設定。' };
+  if (status === 403) return { msg: '這組金鑰沒有權限。', detail: '確認金鑰所屬的專案是否開放 Chat Completions。' };
+  if (status === 404) return { msg: '這個模型不存在，或已經下架。', detail: '到設定換一個模型（例如 llama-3.3-70b-versatile）再試。' };
+  if (status === 413) return { msg: '問題太長，超過模型上限。', detail: '把問題縮短，或分成幾次問。' };
+  if (status === 429) return { msg: '請求太密集，或免費額度用完了。', detail: '等幾十秒再試；如果一直出現，換一組金鑰或稍晚再回來。' };
+  if (status >= 500) return { msg: 'Groq 那邊暫時出錯（' + status + '）。', detail: '這是對方的問題，不是你的金鑰。稍後再試一次。' };
+  return { msg: '請求失敗（' + status + '）。', detail: body ? 'Groq 回應：' + body : '' };
+}
+
+async function ask(question) {
+  if (state.busy) return;
+  const text = question.trim();
+  if (!text) return;
+
+  if (!state.key) { openGate(); return; }
+
+  const { hits, best, relevant } = searchKB(text, TOP_K);
+
+  addUser(text);
+  $('input').value = '';
+  autosize();
+
+  if (!relevant) {
+    const ui = addBot();
+    const close = best && best.score > 0.12 ? best.chunk.title : '';
+    const body =
+      '知識庫裡沒有找到夠相關的段落，所以我不猜。\n\n' +
+      (close ? '最接近的是「' + close + '」，但重疊太少，不能拿來回答。\n\n' : '') +
+      '你可以試試：\n' +
+      '1. 換個說法，用知識庫裡會出現的詞（例如「修改」而不是「改幾次」）\n' +
+      '2. 直接點左側目錄，看原始段落\n' +
+      '3. 如果是新主題，把資料補進 KB 陣列';
+    ui.rich.innerHTML = renderRich(body);
+    ui.row.querySelector('.bubble').style.background = '#fbfaf6';
+    addCopy(ui, () => body);
+    scrollBottom(true);
+    return;
+  }
+
+  state.busy = true;
+  setBusyUI(true);
+  const ui = addBot();
+  ui.rich.appendChild(typingNode('正在讀 ' + hits.length + ' 段知識庫'));
+
+  const messages = [
+    { role: 'system', content: systemPrompt(hits) },
+    ...state.history.slice(-MAX_HISTORY),
+    { role: 'user', content: text }
+  ];
+
+  let answer = '';
+  let raf = 0;
+  const paint = () => {
+    raf = 0;
+    ui.rich.innerHTML = renderRich(answer) + '<span class="cursor"></span>';
+    scrollBottom(false);
+  };
+
+  state.ctrl = new AbortController();
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      signal: state.ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + state.key
+      },
+      body: JSON.stringify({
+        model: state.model,
+        messages,
+        stream: true,
+        temperature: 0.2,
+        max_tokens: 900,
+        top_p: 0.9
+      })
+    });
+
+    if (!res.ok) {
+      let bodyText = '';
+      try { bodyText = await res.text(); } catch (e) {}
+      const f = friendlyError(res.status, bodyText);
+      ui.row.remove();
+      addError(f.msg, f.detail);
+      if (res.status === 401) openSettings();
+      return;
+    }
+
+    if (!res.body) throw new Error('no-stream');
+
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, idx).trim();
+        buf = buf.slice(idx + 1);
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        if (!data || data === '[DONE]') continue;
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices && json.choices[0] && json.choices[0].delta;
+          if (delta && delta.content) {
+            answer += delta.content;
+            if (!raf) raf = requestAnimationFrame(paint);
+          }
+        } catch (e) { /* 忽略半截的 SSE */ }
+      }
+    }
+
+    if (raf) cancelAnimationFrame(raf);
+    answer = answer.trim();
+
+    if (!answer) {
+      ui.rich.innerHTML = renderRich('模型這次沒有回傳內容。再送一次，或到設定換一個模型。');
+    } else {
+      ui.rich.innerHTML = renderRich(answer);
+      addSources(ui, hits);
+      addCopy(ui, () => answer);
+      state.history.push({ role: 'user', content: text }, { role: 'assistant', content: answer });
+      if (state.history.length > MAX_HISTORY) state.history = state.history.slice(-MAX_HISTORY);
+    }
+  } catch (err) {
+    if (raf) cancelAnimationFrame(raf);
+    if (err && err.name === 'AbortError') {
+      ui.rich.innerHTML = renderRich(answer ? answer + '\n\n（已停止）' : '已停止生成。');
+      if (answer) {
+        addSources(ui, hits);
+        addCopy(ui, () => answer);
+      }
+    } else {
+      ui.row.remove();
+      addError('連線失敗。', '可能是網路中斷、瀏覽器阻擋，或 Groq 的 CORS 設定。請確認網路後重試；若持續失敗，換一個瀏覽器試試。');
+    }
+  } finally {
+    state.ctrl = null;
+    state.busy = false;
+    setBusyUI(false);
+    scrollBottom(true);
+  }
+}
+
+function setBusyUI(busy) {
+  const btn = $('sendBtn');
+  btn.classList.toggle('send--stop', busy);
+  btn.innerHTML = busy ? stopIconSVG : sendIconSVG;
+  btn.setAttribute('aria-label', busy ? '停止生成' : '送出問題');
+  btn.title = busy ? '停止生成' : '送出（Enter）';
+  btn.disabled = false;
+  $('input').disabled = busy;
+}
+
+/* ---------- 設定 ---------- */
+function openSettings() {
+  $('setKey').value = state.key;
+  $('setModel').value = state.model;
+  $('testOut').textContent = '';
+  $('testOut').className = 'test-out';
+  syncKeyUI();
+  const dlg = $('settings');
+  if (typeof dlg.showModal === 'function' && !dlg.open) dlg.showModal();
+  else dlg.setAttribute('open', '');
+}
+
+async function testConnection() {
+  const out = $('testOut');
+  const k = ($('setKey').value || '').trim();
+  if (!k) { out.textContent = '先貼上金鑰再測試。'; out.className = 'test-out bad'; return; }
+  out.textContent = '測試中…'; out.className = 'test-out';
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/models', {
+      headers: { 'Authorization': 'Bearer ' + k }
+    });
+    if (res.ok) {
+      const j = await res.json();
+      const n = Array.isArray(j.data) ? j.data.length : 0;
+      out.textContent = '可以連線，這組金鑰看得到 ' + n + ' 個模型。';
+      out.className = 'test-out ok';
+    } else {
+      const f = friendlyError(res.status, '');
+      out.textContent = f.msg + ' ' + (f.detail || '');
+      out.className = 'test-out bad';
+    }
+  } catch (e) {
+    out.textContent = '連不上 Groq。檢查網路，或換一個瀏覽器。';
+    out.className = 'test-out bad';
+  }
+}
+
+/* ---------- 輸入框 ---------- */
+function autosize() {
+  const t = $('input');
+  t.style.height = 'auto';
+  t.style.height = Math.min(t.scrollHeight, 150) + 'px';
+}
+
+function openSidebar() {
+  $('sidebar').classList.add('open');
+  $('scrim').hidden = false;
+}
+function closeSidebar() {
+  $('sidebar').classList.remove('open');
+  $('scrim').hidden = true;
+}
+
+/* ---------- 初始化 ---------- */
+function init() {
+  buildTree();
+
+  $('modelName').textContent = state.model;
+  $('setModel').value = state.model;
+  syncKeyUI();
+
+  // 建議問題
+  const sugs = [
+    { k: '方案', t: '三種合作方案差在哪？', s: '價格、內容與適合的對象', q: '三種合作方案分別包含什麼？價格多少？' },
+    { k: '修改', t: '可以修改幾次？', s: '含幾輪、第 3 輪怎麼算', q: '每個階段可以修改幾次？超過要加錢嗎？' },
+    { k: '付款', t: '訂金與尾款怎麼付？', s: '比例、期限、逾期會怎樣', q: '簽約後的付款方式是什麼？訂金幾成？' },
+    { k: '急件', t: '急件怎麼算？', s: '幾天內算急件、加收多少', q: '急件的定義是什麼？要加收多少？' }
+  ];
+  const wrap = $('sugs');
+  sugs.forEach(s => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sug';
+    b.innerHTML = '<span class="sug__q">' + esc(s.k) + '</span><b>' + esc(s.t) + '</b><span>' + esc(s.s) + '</span>';
+    b.addEventListener('click', () => { $('input').value = s.q; autosize(); $('input').focus(); ask(s.q); });
+    wrap.appendChild(b);
+  });
+
+  // 送出
+  $('sendBtn').addEventListener('click', () => {
+    if (state.busy) { if (state.ctrl) state.ctrl.abort(); return; }
+    ask($('input').value);
+  });
+
+  $('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      if (!state.busy) ask($('input').value);
+    }
+  });
+  $('input').addEventListener('input', autosize);
+
+  // 捲動
+  $('messages').addEventListener('scroll', () => {
+    const el = $('messages');
+    state.autoScroll = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+  });
+
+  // 金鑰 gate
+  $('gateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const k = ($('keyInput').value || '').trim();
+    const err = $('gateErr');
+    if (!k) { err.textContent = '還沒貼上金鑰。'; return; }
+    if (!validKeyShape(k)) {
+      err.textContent = '格式看起來不對。Groq 的金鑰以 gsk_ 開頭，通常 50 個字元以上。';
+      return;
+    }
+    const remember = document.querySelector('input[name="persist"]:checked').value === 'local';
+    setKey(k, remember);
+    err.textContent = '';
+    closeGate();
+    $('input').focus();
+  });
+
+  $('toggleKey').addEventListener('click', () => {
+    const i = $('keyInput');
+    const show = i.type === 'password';
+    i.type = show ? 'text' : 'password';
+    $('toggleKey').textContent = show ? '隱藏' : '顯示';
+  });
+  $('setToggle').addEventListener('click', () => {
+    const i = $('setKey');
+    const show = i.type === 'password';
+    i.type = show ? 'text' : 'password';
+    $('setToggle').textContent = show ? '隱藏' : '顯示';
+  });
+
+  $('pasteKey').addEventListener('click', async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      if (t) { $('keyInput').value = t.trim(); $('keyInput').focus(); }
+    } catch (e) {
+      $('gateErr').textContent = '瀏覽器不讓讀剪貼簿，請手動貼上（Ctrl+V）。';
+    }
+  });
+
+  $('gateSkip').addEventListener('click', () => { closeGate(); });
+
+  // 設定
+  $('settingsBtn').addEventListener('click', openSettings);
+  $('modelChip').addEventListener('click', openSettings);
+  $('statusBtn').addEventListener('click', openSettings);
+
+  $('saveSettings').addEventListener('click', () => {
+    const k = ($('setKey').value || '').trim();
+    const model = ($('setModel').value || '').trim() || DEFAULT_MODEL;
+    if (k && !validKeyShape(k)) {
+      $('testOut').textContent = '金鑰格式看起來不對，應以 gsk_ 開頭。';
+      $('testOut').className = 'test-out bad';
+      return;
+    }
+    if (k) setKey(k, true);
+    state.model = model;
+    store.set(LS_MODEL, model);
+    $('modelName').textContent = model;
+    $('settings').close();
+  });
+
+  $('testKey').addEventListener('click', testConnection);
+
+  $('clearKey').addEventListener('click', () => {
+    clearKey();
+    $('setKey').value = '';
+    $('testOut').textContent = '金鑰已從這個瀏覽器移除。';
+    $('testOut').className = 'test-out ok';
+  });
+
+  // 清空對話
+  $('clearBtn').addEventListener('click', () => {
+    if (state.busy && state.ctrl) state.ctrl.abort();
+    const rows = threadEl().querySelectorAll('.msg');
+    if (!rows.length) return;
+    rows.forEach(r => r.remove());
+    state.history = [];
+    showHero();
+    $('input').focus();
+  });
+
+  // 目錄 / reader
+  $('readAsk').addEventListener('click', () => {
+    const t = $('reader').dataset.ask || '';
+    $('reader').close();
+    $('input').value = '請說明「' + t + '」的內容。';
+    autosize();
+    ask($('input').value);
+  });
+  document.querySelectorAll('[data-close]').forEach(b => {
+    b.addEventListener('click', () => b.closest('dialog').close());
+  });
+  [$('settings'), $('reader')].forEach(d => {
+    d.addEventListener('click', (e) => {
+      if (e.target === d) {
+        const r = d.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+      }
+    });
+  });
+
+  $('menuBtn').addEventListener('click', openSidebar);
+  $('scrim').addEventListener('click', closeSidebar);
+
+  $('replaceHint').addEventListener('click', (e) => {
+    e.preventDefault();
+    const item = KB.find(c => c.title === '怎麼換成自己的知識庫') || KB[KB.length - 1];
+    openReader(item);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
+
+  // 沒有金鑰就開 gate
+  if (!state.key) setTimeout(openGate, 260);
+
+  autosize();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
